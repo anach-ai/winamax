@@ -1,0 +1,5 @@
+selenium==4.16.0
+selenium-stealth==1.0.6
+webdriver-manager==4.0.2
+flask==3.0.0
+flask-cors==4.0.0

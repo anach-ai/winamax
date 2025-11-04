@@ -15,7 +15,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Configuration
-CAPTURE_INTERVAL_MINUTES = 30  # Default: capture every 30 minutes
+CAPTURE_INTERVAL_MINUTES = 1  # Default: capture every 1 minute
 AUTO_CAPTURE_ENABLED = True  # Enable/disable automatic capture
 CAPTURE_DURATION_SECONDS = 180  # Duration for each capture (3 minutes)
 

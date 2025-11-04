@@ -55,6 +55,9 @@ class SocketIOCapture:
         
         options = Options()
         
+        # Headless mode
+        options.add_argument("--headless=new")
+        
         # Anti-detection options
         options.add_argument("--disable-blink-features=AutomationControlled")
         options.add_experimental_option("excludeSwitches", ["enable-automation"])

@@ -223,12 +223,14 @@ Full match data including all metadata, outcomes, bets, etc.
 
 ## Automatic Data Refresh
 
-The API automatically captures fresh data every 30 minutes in the background. No manual intervention needed!
+The API automatically captures fresh data every 1 minute in the background. No manual intervention needed!
 
 **Configuration** (in `serve_data.py`):
-- `CAPTURE_INTERVAL_MINUTES = 30` - Change capture frequency
+- `CAPTURE_INTERVAL_MINUTES = 1` - Change capture frequency (default: 1 minute)
 - `AUTO_CAPTURE_ENABLED = True` - Enable/disable auto-capture
 - `CAPTURE_DURATION_SECONDS = 180` - Duration per capture (3 minutes)
+
+**Note:** Selenium runs in headless mode (no visible browser window) for better performance and server compatibility.
 
 **Manual Capture:**
 ```bash

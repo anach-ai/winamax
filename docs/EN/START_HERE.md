@@ -15,7 +15,7 @@ python serve_data.py
 You should see:
 ```
 Starting Winamax Data API...
-🚀 Starting background capture task (interval: 30 minutes)
+🚀 Starting background capture task (interval: 1 minute)
 Visit:
   http://localhost:5000/api/matches - Get all matches
   http://localhost:5000/api/status - Check status
@@ -24,7 +24,7 @@ Visit:
   POST http://localhost:5000/api/capture/trigger - Trigger capture
 ```
 
-**Note:** The API automatically captures fresh data every 30 minutes in the background!
+**Note:** The API automatically captures fresh data every 1 minute in the background (headless mode)!
 
 ### Step 2: Get the Matches
 

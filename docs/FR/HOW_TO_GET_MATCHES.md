@@ -187,12 +187,14 @@ print(f"Cotes : {match.get('odds', {})}")
 
 ## Actualisation Automatique des Données
 
-L'API **capture automatiquement des données fraîches toutes les 30 minutes** en arrière-plan. Aucune intervention manuelle nécessaire !
+L'API **capture automatiquement des données fraîches toutes les 1 minute** en arrière-plan. Aucune intervention manuelle nécessaire !
 
 **Configuration** (dans `serve_data.py`) :
-- `CAPTURE_INTERVAL_MINUTES = 30` - Modifier la fréquence de capture
+- `CAPTURE_INTERVAL_MINUTES = 1` - Modifier la fréquence de capture (par défaut : 1 minute)
 - `AUTO_CAPTURE_ENABLED = True` - Activer/désactiver la capture automatique
 - `CAPTURE_DURATION_SECONDS = 180` - Durée par capture (3 minutes)
+
+**Note :** Selenium s'exécute en mode headless (sans navigateur visible) pour de meilleures performances.
 
 **Vérifier le Statut de la Capture :**
 ```python

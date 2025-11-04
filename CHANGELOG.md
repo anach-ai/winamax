@@ -86,6 +86,20 @@ All notable changes to this project will be documented in this file.
 - Added capture management documentation
 - Updated match count and statistics
 
+## [1.2.0] - 2025-11-04
+
+### Added
+- **Headless mode** - Selenium runs in background without visible browser window
+- Improved resource efficiency and server compatibility
+
+### Changed
+- **Capture interval reduced** - Changed from 30 minutes to 1 minute for faster data updates
+- Better performance with headless mode
+
+### Configuration
+- `CAPTURE_INTERVAL_MINUTES = 1` - Default capture interval (changed from 30)
+- Headless mode enabled by default (`--headless=new`)
+
 ## [Unreleased]
 
 ### Planned

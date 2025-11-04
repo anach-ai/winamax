@@ -27,7 +27,7 @@ curl http://localhost:5000/api/matches
 - "Kosovo": 3.9
 
 **Latest Capture**: 630+ football matches with odds!  
-**Auto-Refresh**: Data automatically refreshes every 30 minutes in the background.
+**Auto-Refresh**: Data automatically refreshes every 1 minute in the background (headless mode).
 
 **See [docs/EN/HOW_TO_GET_MATCHES.md](docs/EN/HOW_TO_GET_MATCHES.md) for complete guide**
 
@@ -66,7 +66,8 @@ Located in [`docs/FR/`](docs/FR/)
 - **`serve_data.py`** - Working Flask API ⭐⭐⭐
 - Serves captured Socket.IO data
 - JSON endpoints for matches with filters
-- **Background auto-capture** - Automatically refreshes data every 30 minutes
+- **Background auto-capture** - Automatically refreshes data every 1 minute
+- **Headless mode** - Runs Selenium in background without visible browser
 - **Manual capture trigger** - Trigger fresh captures on demand
 - **Match sorting** - Results sorted by match start time
 - **This is the working solution!**
@@ -74,8 +75,9 @@ Located in [`docs/FR/`](docs/FR/)
 ## 🎯 Key Features
 
 ✅ **Stealth Selenium** - Bypasses bot detection  
+✅ **Headless Mode** - Runs in background without visible browser  
 ✅ **Auto-scrolling Capture** - Captures all matches automatically  
-✅ **Background Auto-Capture** - Automatically refreshes data every 30 minutes  
+✅ **Background Auto-Capture** - Automatically refreshes data every 1 minute  
 ✅ **REST API** - Filter by sport, date, odds, and more  
 ✅ **Match Sorting** - Results sorted by match start time  
 ✅ **Match Data** - 630+ football matches with odds  
@@ -118,7 +120,8 @@ Data:       Matches, Odds, Scores, Outcomes (630+ matches, sorted by time)
 - **Betting Odds**: Real-time odds updates
 - **Team Data**: Names, metadata
 - **Filters**: By sport, date, odds (morethan, anyonehas)
-- **Auto-Refresh**: Data automatically updates every 30 minutes
+- **Auto-Refresh**: Data automatically updates every 1 minute
+- **Headless Mode**: Runs in background without visible browser
 
 ## 🔌 API Endpoints
 
@@ -173,7 +176,8 @@ python analyze_results.py
 - **Transport**: WebSocket (not polling)
 - **Update Rate**: Real-time (every few seconds)
 - **Scale**: 630+ football matches captured
-- **Auto-Refresh**: Background capture every 30 minutes
+- **Auto-Refresh**: Background capture every 1 minute
+- **Headless Mode**: Runs without visible browser window
 
 ## 📁 Project Structure
 

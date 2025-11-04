@@ -82,7 +82,7 @@ JSON response with football matches **WITH ODDS**:
 3. Customize queries as needed
 4. Build your application using the API
 
-**Note:** Current capture has 630+ football matches with odds! Matches are automatically sorted by start time. The API refreshes data automatically every 30 minutes.
+**Note:** Current capture has 630+ football matches with odds! Matches are automatically sorted by start time. The API refreshes data automatically every 1 minute (headless mode).
 
 ## 📊 Available Endpoints
 

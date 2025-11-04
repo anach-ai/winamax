@@ -15,11 +15,16 @@ python serve_data.py
 Vous devriez voir :
 ```
 Starting Winamax Data API...
+🚀 Starting background capture task (interval: 1 minute)
 Visit:
   http://localhost:5000/api/matches - Get all matches
   http://localhost:5000/api/status - Check status
   http://localhost:5000/api/info - Capture info
+  http://localhost:5000/api/capture/status - Capture status
+  POST http://localhost:5000/api/capture/trigger - Trigger capture
 ```
+
+**Note :** L'API capture automatiquement des données fraîches toutes les 1 minute en arrière-plan (mode headless) !
 
 ### Étape 2 : Obtenir les Matches
 
@@ -77,18 +82,22 @@ Réponse JSON avec les matches de football **AVEC COTES** :
 3. Personnalisez les requêtes selon vos besoins
 4. Construisez votre application en utilisant l'API
 
-**Note :** La capture actuelle contient 624 matches de football avec cotes ! Le défilement automatique capture tous les matches.
+**Note :** La capture actuelle contient 630+ matches de football avec cotes ! Les matches sont automatiquement triés par heure de début. L'API actualise les données automatiquement toutes les 1 minute (mode headless).
 
 ## 📊 Endpoints Disponibles
 
-- `GET /api/matches` - Tous les matches (simplifié)
+- `GET /api/matches` - Tous les matches (simplifié, triés par heure)
 - `GET /api/matches?sportId=1` - Filtrer par sport (1=Football)
 - `GET /api/matches?date=DD-MM-YYYY` - Filtrer par date
-- `GET /api/matches?sportId=1&date=DD-MM-YYYY` - Filtrer par sport + date
+- `GET /api/matches?morethan=2` - Filtrer où les deux cotes > 2
+- `GET /api/matches?anyonehas=1.4` - Filtrer où un résultat a des cotes 1.400-1.490
+- `GET /api/matches?sportId=1&date=DD-MM-YYYY&morethan=2&anyonehas=1.4` - Combiner tous les filtres
 - `GET /api/matches/verbose` - Tous les matches (détails complets)
 - `GET /api/matches/<id>` - Match spécifique
 - `GET /api/status` - Statut du serveur
 - `GET /api/info` - Informations de données
+- `GET /api/capture/status` - Statut de la capture en arrière-plan
+- `POST /api/capture/trigger` - Déclencher manuellement une capture
 
 ## 🎉 C'est Tout !
 

@@ -106,7 +106,7 @@ python serve_data.py
 ```
 Capture:    Selenium → Auto-scroll → Socket.IO → JSON
             ↓
-Background: Auto-capture every 30 min → Auto-reload → Fresh data
+Background: Auto-capture every 1 min → Auto-reload → Fresh data
             ↓
 Serve:      Flask API → REST endpoints → Your App
 Data:       Matches, Odds, Scores, Outcomes (630+ matches, sorted by time)

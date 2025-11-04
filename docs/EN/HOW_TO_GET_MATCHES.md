@@ -64,14 +64,18 @@ fetch('http://localhost:5000/api/matches')
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/api/matches` | GET | Get all matches (simplified) |
+| `/api/matches` | GET | Get all matches (simplified, sorted by start time) |
 | `/api/matches?sportId=1` | GET | Filter by sport (1=Football) |
 | `/api/matches?date=DD-MM-YYYY` | GET | Filter by date |
-| `/api/matches?sportId=1&date=DD-MM-YYYY` | GET | Filter by sport + date |
+| `/api/matches?morethan=2` | GET | Filter where both home & away odds > 2 |
+| `/api/matches?anyonehas=1.4` | GET | Filter where any outcome has odds 1.400-1.490 |
+| `/api/matches?sportId=1&date=DD-MM-YYYY&morethan=2&anyonehas=1.4` | GET | Combine all filters |
 | `/api/matches/verbose` | GET | Get all matches (full details) |
 | `/api/matches/<id>` | GET | Get specific match |
 | `/api/status` | GET | Server status |
 | `/api/info` | GET | Capture info |
+| `/api/capture/status` | GET | Background capture status |
+| `/api/capture/trigger` | POST | Manually trigger a capture |
 | `/api/data/raw` | GET | Raw data |
 
 ## Match ID Examples
@@ -117,6 +121,39 @@ data = response.json()
 print(f"Football matches on 15-11-2025: {data['count']}")
 ```
 
+### Filter by Odds (morethan)
+
+```python
+import requests
+
+# Get matches where both home & away odds are greater than 2
+response = requests.get('http://localhost:5000/api/matches?morethan=2')
+data = response.json()
+print(f"Matches with both odds > 2: {data['count']}")
+```
+
+### Filter by Odds Range (anyonehas)
+
+```python
+import requests
+
+# Get matches where any outcome (home/draw/away) has odds in range 1.400-1.490
+response = requests.get('http://localhost:5000/api/matches?anyonehas=1.4')
+data = response.json()
+print(f"Matches with odds in range 1.4-1.49: {data['count']}")
+```
+
+### Combine All Filters
+
+```python
+import requests
+
+# Get football matches on specific date with both odds > 2 and any outcome in range 1.4-1.49
+response = requests.get('http://localhost:5000/api/matches?sportId=1&date=15-11-2025&morethan=2&anyonehas=1.4')
+data = response.json()
+print(f"Filtered matches: {data['count']}")
+```
+
 ### Get Specific Match
 
 ```python
@@ -148,18 +185,47 @@ print(f"Odds: {match.get('odds', {})}")
 }
 ```
 
-## Real-Time Data (Optional)
+## Automatic Data Refresh
 
-To get fresh real-time data:
+The API **automatically captures fresh data every 30 minutes** in the background. No manual intervention needed!
+
+**Configuration** (in `serve_data.py`):
+- `CAPTURE_INTERVAL_MINUTES = 30` - Change capture frequency
+- `AUTO_CAPTURE_ENABLED = True` - Enable/disable auto-capture
+- `CAPTURE_DURATION_SECONDS = 180` - Duration per capture (3 minutes)
+
+**Check Capture Status:**
+```python
+import requests
+status = requests.get('http://localhost:5000/api/capture/status').json()
+print(f"Auto-capture enabled: {status['auto_capture_enabled']}")
+print(f"Last capture: {status['last_capture_time']}")
+print(f"Capture in progress: {status['capture_in_progress']}")
+```
+
+**Manually Trigger Capture:**
+```python
+import requests
+response = requests.post('http://localhost:5000/api/capture/trigger')
+print(response.json())  # {"success": true, "message": "Capture started in background"}
+```
+
+## Match Sorting
+
+All matches are **automatically sorted by `matchStart` timestamp** (earliest matches first). This ensures consistent ordering across requests.
+
+## Real-Time Data (Manual Method - Optional)
+
+If you want to manually capture data:
 
 1. Run the capture tool:
 ```bash
-python analyze_winamax_socketio.py 60
+python analyze_winamax_socketio.py
 ```
 
 2. This will update `winamax_socketio_analysis.json`
 
-3. Restart the API server:
+3. The API automatically reloads data after capture (no restart needed):
 ```bash
 python serve_data.py
 ```

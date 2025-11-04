@@ -64,14 +64,18 @@ fetch('http://localhost:5000/api/matches')
 
 | Endpoint | Méthode | Description |
 |----------|--------|-------------|
-| `/api/matches` | GET | Obtenir tous les matches (simplifié) |
+| `/api/matches` | GET | Obtenir tous les matches (simplifié, triés par heure) |
 | `/api/matches?sportId=1` | GET | Filtrer par sport (1=Football) |
 | `/api/matches?date=DD-MM-YYYY` | GET | Filtrer par date |
-| `/api/matches?sportId=1&date=DD-MM-YYYY` | GET | Filtrer par sport + date |
+| `/api/matches?morethan=2` | GET | Filtrer où les deux cotes > 2 |
+| `/api/matches?anyonehas=1.4` | GET | Filtrer où un résultat a des cotes 1.400-1.490 |
+| `/api/matches?sportId=1&date=DD-MM-YYYY&morethan=2&anyonehas=1.4` | GET | Combiner tous les filtres |
 | `/api/matches/verbose` | GET | Obtenir tous les matches (détails complets) |
 | `/api/matches/<id>` | GET | Obtenir un match spécifique |
 | `/api/status` | GET | Statut du serveur |
 | `/api/info` | GET | Informations de capture |
+| `/api/capture/status` | GET | Statut de la capture en arrière-plan |
+| `/api/capture/trigger` | POST | Déclencher manuellement une capture |
 | `/api/data/raw` | GET | Données brutes |
 
 ## Exemples d'IDs de Match
@@ -117,6 +121,39 @@ data = response.json()
 print(f"Matches de football du 15-11-2025 : {data['count']}")
 ```
 
+### Filtrer par Cotes (morethan)
+
+```python
+import requests
+
+# Obtenir les matches où les cotes domicile ET extérieur sont supérieures à 2
+response = requests.get('http://localhost:5000/api/matches?morethan=2')
+data = response.json()
+print(f"Matches avec les deux cotes > 2 : {data['count']}")
+```
+
+### Filtrer par Plage de Cotes (anyonehas)
+
+```python
+import requests
+
+# Obtenir les matches où un résultat (domicile/match nul/extérieur) a des cotes dans la plage 1.400-1.490
+response = requests.get('http://localhost:5000/api/matches?anyonehas=1.4')
+data = response.json()
+print(f"Matches avec cotes dans la plage 1.4-1.49 : {data['count']}")
+```
+
+### Combiner Tous les Filtres
+
+```python
+import requests
+
+# Obtenir les matches de football sur une date spécifique avec les deux cotes > 2 et un résultat dans la plage 1.4-1.49
+response = requests.get('http://localhost:5000/api/matches?sportId=1&date=15-11-2025&morethan=2&anyonehas=1.4')
+data = response.json()
+print(f"Matches filtrés : {data['count']}")
+```
+
 ### Obtenir un Match Spécifique
 
 ```python
@@ -148,18 +185,47 @@ print(f"Cotes : {match.get('odds', {})}")
 }
 ```
 
-## Données en Temps Réel (Optionnel)
+## Actualisation Automatique des Données
 
-Pour obtenir des données fraîches en temps réel :
+L'API **capture automatiquement des données fraîches toutes les 30 minutes** en arrière-plan. Aucune intervention manuelle nécessaire !
+
+**Configuration** (dans `serve_data.py`) :
+- `CAPTURE_INTERVAL_MINUTES = 30` - Modifier la fréquence de capture
+- `AUTO_CAPTURE_ENABLED = True` - Activer/désactiver la capture automatique
+- `CAPTURE_DURATION_SECONDS = 180` - Durée par capture (3 minutes)
+
+**Vérifier le Statut de la Capture :**
+```python
+import requests
+status = requests.get('http://localhost:5000/api/capture/status').json()
+print(f"Capture automatique activée : {status['auto_capture_enabled']}")
+print(f"Dernière capture : {status['last_capture_time']}")
+print(f"Capture en cours : {status['capture_in_progress']}")
+```
+
+**Déclencher Manuellement une Capture :**
+```python
+import requests
+response = requests.post('http://localhost:5000/api/capture/trigger')
+print(response.json())  # {"success": true, "message": "Capture started in background"}
+```
+
+## Tri des Matches
+
+Tous les matches sont **automatiquement triés par timestamp `matchStart`** (matches les plus anciens en premier). Cela garantit un ordre cohérent entre les requêtes.
+
+## Données en Temps Réel (Méthode Manuelle - Optionnel)
+
+Si vous souhaitez capturer manuellement des données :
 
 1. Exécuter l'outil de capture :
 ```bash
-python analyze_winamax_socketio.py 60
+python analyze_winamax_socketio.py
 ```
 
 2. Cela mettra à jour `winamax_socketio_analysis.json`
 
-3. Redémarrer le serveur API :
+3. L'API recharge automatiquement les données après la capture (pas besoin de redémarrer) :
 ```bash
 python serve_data.py
 ```

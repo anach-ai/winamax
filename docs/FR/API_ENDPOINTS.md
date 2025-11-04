@@ -14,6 +14,10 @@
 **Paramètres de Requête :**
 - `sportId` (optionnel) : Filtrer par ID sport (1=Football)
 - `date` (optionnel) : Filtrer par date (format : DD-MM-YYYY)
+- `morethan` (optionnel) : Filtrer les matches où les cotes domicile ET extérieur > valeur (ex: `morethan=2`)
+- `anyonehas` (optionnel) : Filtrer les matches où un résultat (domicile/match nul/extérieur) a des cotes dans la plage [valeur, valeur+0.09] (ex: `anyonehas=1.4` correspond aux cotes 1.400-1.490)
+
+**Note :** Les matches sont automatiquement triés par timestamp `matchStart` (les plus anciens en premier).
 
 **Réponse :**
 ```json
@@ -51,6 +55,15 @@ curl http://localhost:5000/api/matches?date=15-11-2025
 
 # Filtres combinés
 curl http://localhost:5000/api/matches?sportId=1&date=15-11-2025
+
+# Filtrer par cotes (domicile ET extérieur > 2)
+curl http://localhost:5000/api/matches?morethan=2
+
+# Filtrer par plage de cotes (tout résultat 1.400-1.490)
+curl http://localhost:5000/api/matches?anyonehas=1.4
+
+# Combiner tous les filtres
+curl http://localhost:5000/api/matches?sportId=1&date=15-11-2025&morethan=2&anyonehas=1.4
 ```
 
 ### GET `/api/matches/verbose`
@@ -115,9 +128,42 @@ curl http://localhost:5000/api/matches/56418335
 {
   "url": "https://www.winamax.fr/paris-sportifs/sports/1",
   "timestamp": "2025-11-02T03:46:59.686006",
-  "message_count": 155
+  "message_count": 155,
+  "last_capture_time": "2025-11-04T17:52:27.736042"
 }
 ```
+
+### GET `/api/capture/status`
+**Description :** Obtenir le statut de la capture en arrière-plan
+
+**Réponse :**
+```json
+{
+  "auto_capture_enabled": true,
+  "capture_in_progress": false,
+  "interval_minutes": 30,
+  "last_capture_time": "2025-11-04T17:52:27.736042",
+  "message_count": 157
+}
+```
+
+### POST `/api/capture/trigger`
+**Description :** Déclencher manuellement une capture de données fraîches
+
+**Utilisation :**
+```bash
+curl -X POST http://localhost:5000/api/capture/trigger
+```
+
+**Réponse :**
+```json
+{
+  "success": true,
+  "message": "Capture started in background"
+}
+```
+
+**Note :** La capture s'exécute en arrière-plan (prend ~3 minutes). Utilisez `/api/capture/status` pour surveiller la progression.
 
 ### GET `/api/data/raw`
 **Description :** Obtenir les données brutes complètes capturées
@@ -169,21 +215,36 @@ Données de match complètes incluant toutes les métadonnées, résultats, pari
 
 ## Jeu de Données Actuel
 
-- **624 matches de football** avec noms des équipes et cotes
-- **155 messages** capturés
+- **630+ matches de football** avec noms des équipes et cotes
+- **157 messages** capturés
 - Données de capture avec défilement automatique
 - Tous les matches incluent des données de cotes
+- **Matches automatiquement triés par heure de début**
 
-## Pour des Données Fraîches
+## Actualisation Automatique des Données
 
-Utiliser l'outil de capture Selenium :
+L'API capture automatiquement des données fraîches toutes les 30 minutes en arrière-plan. Aucune intervention manuelle nécessaire !
+
+**Configuration** (dans `serve_data.py`) :
+- `CAPTURE_INTERVAL_MINUTES = 30` - Modifier la fréquence de capture
+- `AUTO_CAPTURE_ENABLED = True` - Activer/désactiver la capture automatique
+- `CAPTURE_DURATION_SECONDS = 180` - Durée par capture (3 minutes)
+
+**Capture Manuelle :**
 ```bash
-# Capturer pendant 120 secondes avec défilement auto
-python analyze_winamax_socketio.py 120
+# Déclencher une capture immédiatement
+curl -X POST http://localhost:5000/api/capture/trigger
+
+# Vérifier le statut de la capture
+curl http://localhost:5000/api/capture/status
 ```
 
-Puis redémarrer le serveur API pour charger les nouvelles données :
+**Capture Manuelle (Ancienne Méthode) :**
 ```bash
+# Capturer pendant 180 secondes avec défilement auto
+python analyze_winamax_socketio.py
+
+# Puis redémarrer le serveur API (pas nécessaire avec la capture auto)
 python serve_data.py
 ```
 
@@ -198,5 +259,21 @@ curl http://localhost:5000/api/matches?date=15-11-2025
 
 # Football sur une date spécifique
 curl http://localhost:5000/api/matches?sportId=1&date=15-11-2025
+
+# Matches où les cotes domicile ET extérieur > 2
+curl http://localhost:5000/api/matches?morethan=2
+
+# Matches où un résultat a des cotes 1.400-1.490
+curl http://localhost:5000/api/matches?anyonehas=1.4
+
+# Matches de football avec les deux cotes > 2
+curl http://localhost:5000/api/matches?sportId=1&morethan=2
+
+# Combiner tous les filtres
+curl http://localhost:5000/api/matches?sportId=1&date=15-11-2025&morethan=2&anyonehas=1.4
 ```
+
+## Tri des Matches
+
+Tous les matches sont automatiquement triés par timestamp `matchStart` en ordre croissant (matches les plus anciens en premier). Les matches sans timestamp sont placés à la fin.
 

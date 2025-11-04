@@ -21,12 +21,13 @@ python serve_data.py
 curl http://localhost:5000/api/matches
 ```
 
-**Returns:** Clean JSON with **624 football matches** including odds:
+**Returns:** Clean JSON with **630+ football matches** including odds (sorted by start time):
 - "Slovénie": 1.78
 - "Match nul": 3.2
 - "Kosovo": 3.9
 
-**Latest Capture**: 624 football matches with odds!
+**Latest Capture**: 630+ football matches with odds!  
+**Auto-Refresh**: Data automatically refreshes every 30 minutes in the background.
 
 **See [docs/EN/HOW_TO_GET_MATCHES.md](docs/EN/HOW_TO_GET_MATCHES.md) for complete guide**
 
@@ -65,14 +66,19 @@ Located in [`docs/FR/`](docs/FR/)
 - **`serve_data.py`** - Working Flask API ⭐⭐⭐
 - Serves captured Socket.IO data
 - JSON endpoints for matches with filters
+- **Background auto-capture** - Automatically refreshes data every 30 minutes
+- **Manual capture trigger** - Trigger fresh captures on demand
+- **Match sorting** - Results sorted by match start time
 - **This is the working solution!**
 
 ## 🎯 Key Features
 
 ✅ **Stealth Selenium** - Bypasses bot detection  
-✅ **Capture Tool** - Auto-scrolling to get all matches  
-✅ **REST API** - Filter by sport, date, or both  
-✅ **Match Data** - 624 football matches with odds  
+✅ **Auto-scrolling Capture** - Captures all matches automatically  
+✅ **Background Auto-Capture** - Automatically refreshes data every 30 minutes  
+✅ **REST API** - Filter by sport, date, odds, and more  
+✅ **Match Sorting** - Results sorted by match start time  
+✅ **Match Data** - 630+ football matches with odds  
 ✅ **Clean JSON** - Simplified output  
 ✅ **Complete Docs** - Everything documented  
 ✅ **Bilingual** - English & French documentation
@@ -97,46 +103,64 @@ python serve_data.py
 
 ```
 Capture:    Selenium → Auto-scroll → Socket.IO → JSON
+            ↓
+Background: Auto-capture every 30 min → Auto-reload → Fresh data
+            ↓
 Serve:      Flask API → REST endpoints → Your App
-Data:       Matches, Odds, Scores, Outcomes (624 matches)
+Data:       Matches, Odds, Scores, Outcomes (630+ matches, sorted by time)
 ```
 
 ## 📊 Data You Can Access
 
-- **624 Football Matches** with competitor names and odds
+- **630+ Football Matches** with competitor names and odds
 - **Live Matches**: Real-time scores and time progression
-- **Upcoming Matches**: Schedules and match info
+- **Upcoming Matches**: Schedules and match info (sorted by start time)
 - **Betting Odds**: Real-time odds updates
 - **Team Data**: Names, metadata
-- **Filters**: By sport and date
+- **Filters**: By sport, date, odds (morethan, anyonehas)
+- **Auto-Refresh**: Data automatically updates every 30 minutes
 
 ## 🔌 API Endpoints
 
 ```
-GET  /api/matches                 - Get all matches (simplified)
-GET  /api/matches?sportId=1       - Filter by sport (1=Football)
-GET  /api/matches?date=DD-MM-YYYY - Filter by date
-GET  /api/matches?sportId=1&date=DD-MM-YYYY - Combined filters
-GET  /api/matches/<id>            - Get specific match
-GET  /api/matches/verbose         - Full details
-GET  /api/status                  - Server status
-GET  /api/info                    - Capture info
+GET  /api/matches                              - Get all matches (sorted by start time)
+GET  /api/matches?sportId=1                     - Filter by sport (1=Football)
+GET  /api/matches?date=DD-MM-YYYY               - Filter by date
+GET  /api/matches?morethan=2                   - Filter where both odds > 2
+GET  /api/matches?anyonehas=1.4                - Filter where any outcome has odds 1.400-1.490
+GET  /api/matches?sportId=1&date=DD-MM-YYYY&morethan=2&anyonehas=1.4 - Combine filters
+GET  /api/matches/<id>                         - Get specific match
+GET  /api/matches/verbose                      - Full details
+GET  /api/status                               - Server status
+GET  /api/info                                 - Capture info
+GET  /api/capture/status                       - Background capture status
+POST /api/capture/trigger                      - Manually trigger capture
 ```
 
 ## ⚡ Quick Commands
 
 ```bash
-# Start API server
+# Start API server (auto-capture enabled)
 python serve_data.py
 
-# Get matches
+# Get matches (sorted by start time)
 curl http://localhost:5000/api/matches
 
 # Filter by football + date
 curl http://localhost:5000/api/matches?sportId=1&date=15-11-2025
 
-# Capture new data (120 seconds with auto-scroll)
-python analyze_winamax_socketio.py 120
+# Filter by odds
+curl http://localhost:5000/api/matches?morethan=2
+curl http://localhost:5000/api/matches?anyonehas=1.4
+
+# Trigger manual capture
+curl -X POST http://localhost:5000/api/capture/trigger
+
+# Check capture status
+curl http://localhost:5000/api/capture/status
+
+# Manual capture (old method, optional)
+python analyze_winamax_socketio.py
 
 # Analyze results
 python analyze_results.py
@@ -148,7 +172,8 @@ python analyze_results.py
 - **Endpoint**: `wss://sports-eu-west-3.winamax.fr/uof-sports-server/socket.io/`
 - **Transport**: WebSocket (not polling)
 - **Update Rate**: Real-time (every few seconds)
-- **Scale**: 624 football matches captured
+- **Scale**: 630+ football matches captured
+- **Auto-Refresh**: Background capture every 30 minutes
 
 ## 📁 Project Structure
 
@@ -160,7 +185,7 @@ winamax/
 │   └── serve_data.py                  - Flask API server ⭐
 │
 ├── 📊 Data
-│   ├── winamax_socketio_analysis.json - Captured match data (624 matches)
+│   ├── winamax_socketio_analysis.json - Captured match data (630+ matches, auto-updated)
 │   └── winamax_socketio.log          - Capture log
 │
 ├── 📝 Documentation

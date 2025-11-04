@@ -58,6 +58,34 @@ All notable changes to this project will be documented in this file.
 - flask==3.0.0
 - flask-cors==4.0.0
 
+## [1.1.0] - 2025-11-04
+
+### Added
+- **Background auto-capture** - Automatically captures fresh data every 30 minutes
+- **Manual capture trigger** - `POST /api/capture/trigger` endpoint to trigger captures on demand
+- **Capture status endpoint** - `GET /api/capture/status` to monitor capture status
+- **Match sorting** - All matches automatically sorted by `matchStart` timestamp (earliest first)
+- **Odds filter (morethan)** - Filter matches where both home & away odds are greater than a value
+- **Odds range filter (anyonehas)** - Filter matches where any outcome (home/draw/away) has odds in a specific range
+- Automatic data reload after each capture
+- Capture progress monitoring
+
+### Changed
+- Updated match count to 630+ matches (after filtering)
+- Improved data extraction reliability
+- Enhanced error handling for capture operations
+
+### Configuration
+- `CAPTURE_INTERVAL_MINUTES = 30` - Configurable capture frequency
+- `AUTO_CAPTURE_ENABLED = True` - Enable/disable auto-capture
+- `CAPTURE_DURATION_SECONDS = 180` - Duration per capture
+
+### Documentation
+- Updated all documentation with new features
+- Added examples for all new filters
+- Added capture management documentation
+- Updated match count and statistics
+
 ## [Unreleased]
 
 ### Planned

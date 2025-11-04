@@ -15,11 +15,16 @@ python serve_data.py
 You should see:
 ```
 Starting Winamax Data API...
+🚀 Starting background capture task (interval: 30 minutes)
 Visit:
   http://localhost:5000/api/matches - Get all matches
   http://localhost:5000/api/status - Check status
   http://localhost:5000/api/info - Capture info
+  http://localhost:5000/api/capture/status - Capture status
+  POST http://localhost:5000/api/capture/trigger - Trigger capture
 ```
+
+**Note:** The API automatically captures fresh data every 30 minutes in the background!
 
 ### Step 2: Get the Matches
 
@@ -77,18 +82,22 @@ JSON response with football matches **WITH ODDS**:
 3. Customize queries as needed
 4. Build your application using the API
 
-**Note:** Current capture has 624 football matches with odds! Auto-scrolling captures all matches.
+**Note:** Current capture has 630+ football matches with odds! Matches are automatically sorted by start time. The API refreshes data automatically every 30 minutes.
 
 ## 📊 Available Endpoints
 
-- `GET /api/matches` - All matches (simplified)
+- `GET /api/matches` - All matches (simplified, sorted by start time)
 - `GET /api/matches?sportId=1` - Filter by sport (1=Football)
 - `GET /api/matches?date=DD-MM-YYYY` - Filter by date
-- `GET /api/matches?sportId=1&date=DD-MM-YYYY` - Filter by sport + date
+- `GET /api/matches?morethan=2` - Filter where both home & away odds > 2
+- `GET /api/matches?anyonehas=1.4` - Filter where any outcome has odds 1.400-1.490
+- `GET /api/matches?sportId=1&date=DD-MM-YYYY&morethan=2&anyonehas=1.4` - Combine filters
 - `GET /api/matches/verbose` - All matches (full details)
 - `GET /api/matches/<id>` - Specific match
 - `GET /api/status` - Server status
 - `GET /api/info` - Data info
+- `GET /api/capture/status` - Background capture status
+- `POST /api/capture/trigger` - Manually trigger a capture
 
 ## 🎉 That's It!
 
